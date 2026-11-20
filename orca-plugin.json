@@ -2,7 +2,7 @@
   "manifestVersion": 2,
   "id": "running-terminals",
   "name": "Terminal Lens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Find processes running in your Orca terminals and jump directly to the terminal running them. Search across projects and worktrees.",
   "author": {
     "name": "Faisal Muhammad",

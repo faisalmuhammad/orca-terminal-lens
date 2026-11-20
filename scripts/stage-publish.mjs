@@ -1,8 +1,9 @@
-import { mkdir, rm, readdir, readFile, writeFile, copyFile, lstat, access } from 'node:fs/promises';
+import { mkdir, rm, readdir, readFile, writeFile, copyFile, access } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { root, run, releaseFiles, validateRelease } from './release-lib.mjs';
+import { distributionFile } from './publishing-policy.mjs';
 
 export async function publishingFiles(directory = root) {
   const files = await releaseFiles(directory);
@@ -18,9 +19,7 @@ export async function publishingFiles(directory = root) {
 export async function auditPublishingFiles(directory, files) {
   const homePath = /(?:[/]Users[/][^/\s]+[/]|[/]home[/][^/\s]+[/]|[A-Z]:[\\]Users[\\])/i;
   for (const file of files) {
-    const stat = await lstat(path.join(directory, file));
-    if (!stat.isFile() || stat.isSymbolicLink()) throw new Error('Publishing file is not a regular file: ' + file);
-    const data = await readFile(path.join(directory, file));
+    const data = await distributionFile(directory, file);
     if (file.endsWith('.png')) {
       let offset = 8;
       while (offset + 12 <= data.length) {

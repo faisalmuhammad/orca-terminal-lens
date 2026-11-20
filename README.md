@@ -8,7 +8,7 @@ Find processes running in your terminals inside [Orca](https://onorca.dev). Sear
 
 ![See All Active Terminals in One Place! Terminal Lens with a sample process list](assets/cover.png)
 
-Version **0.1.0**. The release process is documented in [RELEASE.md](RELEASE.md).
+Version **0.1.1**. The release process is documented in [RELEASE.md](RELEASE.md).
 
 ## Install
 
@@ -20,10 +20,10 @@ Install a versioned release:
 2. Choose **Add plugin → From a Git URL…** and enter:
 
    ```text
-   https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.0
+   https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.1
    ```
 
-   Keep `#v0.1.0` at the end to install the release tag.
+   Keep `#v0.1.1` at the end to install the release tag.
 3. Review and approve the **trusted worker**, **workspace discovery and navigation**, and **terminal read** access.
 4. Open **Terminal Lens** from the terminal icon in the sidebar.
 
@@ -32,7 +32,7 @@ All runtime assets are included. Installation needs no separate Node.js installa
 CLI alternative:
 
 ```sh
-orca plugin install faisalmuhammad/orca-terminal-lens@v0.1.0 --json
+orca plugin install faisalmuhammad/orca-terminal-lens@v0.1.1 --json
 ```
 
 For local use before publication, add the plugin folder through **Settings → Plugins → Development folders…**. The cover renders the actual panel with fictional sample data; its uniform dark background and glow are image treatments. See [artwork provenance](assets/README.md).

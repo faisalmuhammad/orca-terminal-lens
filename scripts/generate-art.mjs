@@ -39,7 +39,7 @@ const cover = svg(1600,1000,
   '<radialGradient id="violet"><stop stop-color="' + lavender + '" stop-opacity=".24"/><stop offset="1" stop-color="' + ink + '" stop-opacity="0"/></radialGradient>' +
   '<radialGradient id="mint"><stop stop-color="' + mint + '" stop-opacity=".13"/><stop offset="1" stop-color="' + green + '" stop-opacity="0"/></radialGradient>' +
   '<filter id="shadow" x="-40%" y="-15%" width="180%" height="150%"><feDropShadow dx="0" dy="0" stdDeviation="32" flood-color="' + lavender + '" flood-opacity=".7"/><feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="' + mint + '" flood-opacity=".3"/></filter>' +
-  '<clipPath id="panel"><rect x="950" y="32" width="432" height="936" rx="24"/></clipPath></defs>' +
+  '<clipPath id="panel"><rect x="950" y="74" width="500" height="854" rx="24"/></clipPath></defs>' +
   '<rect width="1600" height="1000" fill="url(#night)"/><ellipse cx="1190" cy="330" rx="640" ry="560" fill="url(#violet)"/><ellipse cx="1450" cy="820" rx="510" ry="440" fill="url(#mint)"/>' +
   '<g fill="none" stroke="' + lavender + '"><circle cx="1240" cy="500" r="480" opacity=".065"/><circle cx="1240" cy="500" r="570" opacity=".04"/><path d="M710 920C850 820 864 630 930 500S1020 260 1550 140" opacity=".09"/></g>' +
   glyph(80,90,76) + label(178,141,'Terminal Lens',32,white,700) +
@@ -51,9 +51,9 @@ const cover = svg(1600,1000,
   '<rect x="84" y="748" width="448" height="58" rx="14" fill="' + lavender + '" fill-opacity=".07" stroke="' + lavender + '" stroke-opacity=".22"/>' +
   '<g fill="none" stroke="' + mint + '" stroke-width="2" stroke-linecap="round"><circle cx="114" cy="774" r="7"/><path d="m119 779 6 6"/></g>' +
   label(140,785,'Search by process or terminal name',21,white,500) +
-  '<rect x="948" y="30" width="436" height="940" rx="26" fill="' + lavender + '" fill-opacity=".48" filter="url(#shadow)"/>' +
-  '<image x="950" y="32" width="432" height="936" preserveAspectRatio="xMidYMid meet" clip-path="url(#panel)" xlink:href="data:image/png;base64,' + shot.toString('base64') + '"/>' +
-  label(1118,990,'Sample data',13,quiet));
+  '<rect x="948" y="72" width="504" height="858" rx="26" fill="' + lavender + '" fill-opacity=".48" filter="url(#shadow)"/>' +
+  '<image x="950" y="74" width="500" height="854" preserveAspectRatio="xMidYMid meet" clip-path="url(#panel)" xlink:href="data:image/png;base64,' + shot.toString('base64') + '"/>' +
+  label(1160,954,'Sample data',13,quiet));
 const social = svg(1280,640,
   '<defs><linearGradient id="night" x1="0" y1="0" x2="1" y2="1"><stop stop-color="' + night + '"/><stop offset="1" stop-color="' + deep + '"/></linearGradient><radialGradient id="halo"><stop stop-color="' + lavender + '" stop-opacity=".22"/><stop offset="1" stop-color="' + ink + '" stop-opacity="0"/></radialGradient></defs>' +
   '<rect width="1280" height="640" fill="url(#night)"/><circle cx="1040" cy="320" r="470" fill="url(#halo)"/><circle cx="1040" cy="320" r="263" fill="none" stroke="' + lavender + '" stroke-opacity=".1"/><circle cx="1040" cy="320" r="340" fill="none" stroke="' + mint + '" stroke-opacity=".06"/>' +

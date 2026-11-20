@@ -2,4 +2,8 @@ node_modules/
 .orca/
 .release/
 .DS_Store
+._*
+__MACOSX/
+Thumbs.db
+Desktop.ini
 *.log

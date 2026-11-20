@@ -13,6 +13,8 @@ The export includes:
 
 It excludes local Orca state, SDK types, design proposals, environment files, dependencies, private paths, caches, logs, archives, and workspace instructions. The snapshot refuses to replace an existing Git checkout. Move the exported files into your repository before regenerating an export.
 
+Remove any previously tracked **assets/.DS_Store** and other Finder metadata from your GitHub repository before committing the new release. Git ignores apply to local Git operations; GitHub's browser upload does not apply .gitignore. The release check now audits every tracked file and rejects metadata, native binaries, archives, bytecode, symlinks, and TTF/OTF fonts. Supported image files and WOFF/WOFF2 fonts are permitted.
+
 ## After upload
 
 Enable Actions and allow the workflow to create version tags. A successful push to **main** automatically publishes the manifest version with changelog notes and no attached archives. Add the **orca-plugin** repository topic and choose **assets/social.png** for GitHub's Social preview setting.

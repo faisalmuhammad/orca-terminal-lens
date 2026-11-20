@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Remove macOS Finder metadata from publication files.
+- Reject executables, native modules, archives, bytecode, unsupported binary content, and symlinks in publishing checks.
+- Audit all Git-tracked files before release, including files outside the export allowlist or matching ignore rules.
+
 ## 0.1.0
 
 First public release of Terminal Lens: find processes running in Orca terminals and jump directly to their panes.

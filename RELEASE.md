@@ -1,6 +1,6 @@
 # Releasing Terminal Lens
 
-Release version: **0.1.0**, tag **v0.1.0**.
+Release version: **0.1.1**, tag **v0.1.1**.
 
 ## Repository content
 
@@ -18,7 +18,7 @@ npm run check
 orca plugin validate . --json
 ```
 
-Checks validate package, lockfile, manifest and footer versions; changelog notes; file and image budgets; entry points; runtime imports; and the exact publishing file allowlist. The audit rejects machine-specific paths, image text metadata, private dependency sources, and symlinks. Process behavior and release automation use controlled fixtures.
+Checks validate package, lockfile, manifest and footer versions; changelog notes; file and image budgets; entry points; runtime imports; and the exact publishing file allowlist. The audit rejects machine-specific paths, image text metadata, private dependency sources, symlinks, Finder metadata, executables, native modules, archives, bytecode, and unsupported binaries. In Git repositories it inspects every tracked file, including ignored files already in the index. Process behavior and release automation use controlled fixtures.
 
 ## GitHub setup
 
@@ -49,7 +49,7 @@ git push origin main
 The versioned install reference is:
 
 ```text
-https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.0
+https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.1
 ```
 
 After publication, generate the Orca catalog entry from the published commit with **orca plugin release-entry . --json**. Catalog submission is separate from GitHub release automation. Published tags must remain unchanged. Check the listing at https://www.onorca.dev/plugins/faisalmuhammad/orca-terminal-lens.

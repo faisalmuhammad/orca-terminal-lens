@@ -16,10 +16,8 @@ const terminal = (id, title, name, cpu, memory, accessed, agentIdentity) => ({
 const fixture = { scannedAt: 1700000000000, notes: [], groups: [
   { id: 'web-main', repoId: 'web', projectId: 'northstar', project: 'Northstar', name: 'main', branch: 'main', path: '/demo/northstar/main', host: 'local', lastAccessAt: 60,
     appearance: { iconName: 'Code2', color: '#287d6c' }, terminals: [terminal('web', 'Web development server', 'node', 4.2, 368, 60), terminal('agent', 'Code review', 'node', 1.6, 184, 50, 'codex')] },
-  { id: 'web-search', repoId: 'web', projectId: 'northstar', project: 'Northstar', name: 'feature/search', branch: 'feature/search', path: '/demo/northstar/search', host: 'local', lastAccessAt: 40,
-    appearance: { iconName: 'Code2', color: '#287d6c' }, terminals: [terminal('tests', 'Watch tests', 'npm', 0.8, 92, 40)] },
   { id: 'api-main', repoId: 'api', projectId: 'harbor', project: 'Harbor', name: 'main', branch: 'main', path: '/demo/harbor/main', host: 'local', lastAccessAt: 30,
-    appearance: { iconName: 'Server', color: '#5255a3' }, terminals: [terminal('api', 'API server', 'python3', 2.3, 76, 30), terminal('container', 'Local container', 'docker', 0.4, 126, 20)] }
+    appearance: { iconName: 'Server', color: '#5255a3' }, terminals: [terminal('api', 'API server', 'python3', 2.3, 76, 30)] }
 ] };
 const dark = 'color-scheme:dark;--orca-background:#18202b;--orca-foreground:#d5dbe4;--orca-ring:#b196ff;--orca-muted-foreground:#94a3b8;';
 const light = 'color-scheme:light;--orca-background:#ffffff;--orca-foreground:#5255a3;--orca-ring:#287d6c;--orca-muted-foreground:#6f6b80;';

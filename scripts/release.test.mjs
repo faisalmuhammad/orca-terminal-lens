@@ -93,16 +93,16 @@ test('publishing staging preserves existing Git checkouts', async () => fixture(
 test('manifest-driven preparation synchronizes package, lockfile, footer, and install references', async () => fixture(async directory => {
   const file = path.join(directory, 'orca-plugin.json');
   const manifest = JSON.parse(await readFile(file, 'utf8'));
-  manifest.version = '0.1.1';
+  manifest.version = '8.7.6';
   await writeFile(file, JSON.stringify(manifest));
-  await writeFile(path.join(directory, 'CHANGELOG.md'), ['## 0.1.1', '- Search improvements.', ''].join(String.fromCharCode(10)));
-  assert.equal((await prepareRelease(directory)).tag, 'v0.1.1');
-  assert.equal(readReleaseInfo(directory, 'v0.1.1').version, '0.1.1');
+  await writeFile(path.join(directory, 'CHANGELOG.md'), ['## 8.7.6', '- Search improvements.', ''].join(String.fromCharCode(10)));
+  assert.equal((await prepareRelease(directory)).tag, 'v8.7.6');
+  assert.equal(readReleaseInfo(directory, 'v8.7.6').version, '8.7.6');
   const lock = JSON.parse(await readFile(path.join(directory, 'package-lock.json'), 'utf8'));
-  assert.equal(lock.packages[''].version, '0.1.1');
-  assert.ok((await readFile(path.join(directory, 'panel/index.html'), 'utf8')).includes('>v0.1.1</span>'));
-  assert.ok((await readFile(path.join(directory, 'README.md'), 'utf8')).includes('@v0.1.1'));
-  assert.ok((await readFile(path.join(directory, 'RELEASE.md'), 'utf8')).includes('#v0.1.1'));
+  assert.equal(lock.packages[''].version, '8.7.6');
+  assert.ok((await readFile(path.join(directory, 'panel/index.html'), 'utf8')).includes('>v8.7.6</span>'));
+  assert.ok((await readFile(path.join(directory, 'README.md'), 'utf8')).includes('@v8.7.6'));
+  assert.ok((await readFile(path.join(directory, 'RELEASE.md'), 'utf8')).includes('#v8.7.6'));
 }));
 
 test('preparation rejects a missing changelog entry before changing package metadata', async () => fixture(async directory => {

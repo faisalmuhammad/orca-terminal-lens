@@ -12,6 +12,6 @@ Editable SVGs and the demo panel capture are in `assets/source/` in the source r
 
 The cover explains process discovery across projects and worktrees with process agnostic copy and a concise search feature label. Its supporting copy and feature treatment take inspiration from the Assets Library and Feeds covers. The embedded panel preview uses one uniform dark background derived from the approved foreground token, with a violet/mint glow; these are artwork treatments only.
 
-The panel capture is created by `scripts/preview-release.mjs`, rendering the current panel with a mock bridge. Projects, worktrees, PIDs, and resource samples are fictional. That bridge is used only by the preview server and is excluded from the plugin archive. The cover provides the panel preview without a separate screenshot gallery.
+The panel capture is created by `scripts/preview-release.mjs`, rendering the current panel with a mock bridge. It uses three terminal rows at 480 × 820, displayed larger in a shorter cover preview. Projects, worktrees, PIDs, and resource samples are fictional. That bridge is used only by the preview server and is excluded from the plugin archive. The cover provides the panel preview without a separate screenshot gallery.
 
 See [the release guide](../docs/RELEASING.md) to regenerate screenshots and artwork. Upload `social.png` in the GitHub repository's Settings → General → Social preview; it is separate from Orca's cover field.

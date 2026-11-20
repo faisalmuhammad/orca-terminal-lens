@@ -30,11 +30,11 @@ try {
   await mkdir(path.join(root,'assets/source'),{recursive:true});
   page=(await call(['tab','create','--url','http://127.0.0.1:43192/panel/index.html?theme=dark&view=project'])).browserPageId;
   if (!page) throw new Error('Orca did not return a browser page ID');
-  await call(['viewport','--page',page,'--width','480','--height','1040']);
+  await call(['viewport','--page',page,'--width','480','--height','820']);
   await call(['snapshot','--page',page]);
   await call(['eval','--page',page,'--expression','Promise.resolve(window.__captureReady).then(() => {document.documentElement.style.setProperty("--orca-background",' + JSON.stringify(backdrop) + ');const style=document.createElement("style");style.textContent="body,main,footer,.overview,.group,.group-heading,.terminal,.search,.view-switch{background:var(--color-surface)!important;}";document.head.append(style);return true;})']);
   const capture=await call(['full-screenshot','--page',page]);
-  await sharp(capture.path).extract({left:0,top:0,width:480,height:1040}).png({compressionLevel:9}).toFile(path.join(root,'assets/source/panel-demo-dark.png'));
+  await sharp(capture.path).extract({left:0,top:0,width:480,height:820}).png({compressionLevel:9}).toFile(path.join(root,'assets/source/panel-demo-dark.png'));
   await run(process.execPath,[path.join(root,'scripts/generate-art.mjs')],{cwd:root,timeout:30000});
   console.log('Captured the sample panel for the cover and generated release artwork.');
 } finally {

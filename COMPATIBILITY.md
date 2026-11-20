@@ -1,6 +1,6 @@
 # Compatibility
 
-Terminal Lens 0.1.0 requires Orca desktop 1.4.260 or newer and its compatible CLI on a macOS or Linux host. The runtime ships as JavaScript and requires no separate dependency installation or build step. Windows process inspection is outside this release.
+Terminal Lens 0.1.1 requires Orca desktop 1.4.260 or newer and its compatible CLI on a macOS or Linux host. The runtime ships as JavaScript and requires no separate dependency installation or build step. Windows process inspection is outside this release.
 
 ## Terminal ownership
 
