@@ -1,0 +1,47 @@
+{
+  "manifestVersion": 2,
+  "id": "running-terminals",
+  "name": "Terminal Lens",
+  "version": "0.1.0",
+  "description": "Find processes running in your Orca terminals and jump directly to the terminal running them. Search across projects and worktrees.",
+  "author": {
+    "name": "Faisal Muhammad",
+    "url": "https://github.com/faisalmuhammad"
+  },
+  "repository": "https://github.com/faisalmuhammad/orca-terminal-lens",
+  "homepage": "https://github.com/faisalmuhammad/orca-terminal-lens#readme",
+  "icon": "assets/icon.png",
+  "cover": {
+    "path": "assets/cover.png",
+    "alt": "See All Active Terminals in One Place! Terminal Lens cover with a glowing, uniform dark panel preview and fictional sample data."
+  },
+  "license": "MIT",
+  "engines": {
+    "orca": ">=1.4.260"
+  },
+  "execution": "trusted-worker",
+  "pluginApi": 1,
+  "main": "src/worker.mjs",
+  "contributes": {
+    "panels": [
+      {
+        "id": "running-terminals",
+        "title": "Terminal Lens",
+        "icon": "terminal",
+        "entry": "panel/index.html",
+        "ui": "html"
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "kind": "workspace:read"
+    },
+    {
+      "kind": "workspace:write"
+    },
+    {
+      "kind": "terminal:read"
+    }
+  ]
+}

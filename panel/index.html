@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terminal Lens</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./theme.css">
+</head>
+<body>
+  <main>
+    <div class="panel-top">
+      <header class="header">
+        <div class="brand"><img class="brand-icon" src="../assets/icon.png" width="24" height="24" alt=""><h1>Terminal Lens</h1></div>
+        <div class="header-actions">
+          <label class="live-switch" title="Refresh every 10 seconds"><input id="live" type="checkbox" class="sr-only" checked><span class="live-dot"></span><span id="live-label">Live</span></label>
+          <button id="refresh" class="icon-button" type="button" aria-label="Refresh terminals" title="Refresh terminals" data-icon="refresh"></button>
+        </div>
+      </header>
+      <section class="overview" aria-label="Resource overview">
+        <div class="stat-grid">
+          <div class="stat"><span class="stat-label">Running</span><strong id="running-count">—</strong><span id="summary" class="stat-note" role="status">Connecting…</span></div>
+          <div class="stat"><span class="stat-label">CPU</span><strong id="cpu-total">—</strong><span class="stat-note">100% = 1 core</span></div>
+          <div class="stat"><span class="stat-label">Memory</span><strong id="memory-total">—</strong><span class="stat-note">Terminal trees</span></div>
+        </div>
+        <div id="trend" class="trend"></div>
+        <div class="trend-caption"><span id="trend-label">CPU trend · waiting for a scan</span><span id="trend-scale"></span></div>
+      </section>
+      <div class="filters">
+        <div class="search-row">
+          <div class="search"><span data-icon="search"></span><label class="sr-only" for="search">Search processes or worktrees</label><input id="search" type="search" placeholder="Find processes…" autocomplete="off"><kbd>/</kbd></div>
+          <div class="view-switch" role="group" aria-label="Terminal view">
+            <button id="view-project" class="icon-button" type="button" data-view="project" aria-label="Grouped by project" title="Grouped by project" aria-pressed="false"><span data-icon="folder"></span></button>
+            <button id="view-grouped" class="icon-button" type="button" data-view="grouped" aria-label="Grouped by tree" title="Grouped by tree" aria-pressed="true"><span data-icon="layers"></span></button>
+            <button id="view-flat" class="icon-button" type="button" data-view="flat" aria-label="Flat List" title="Flat List" aria-pressed="false"><span data-icon="list"></span></button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <div class="scope-control"><span data-icon="branch"></span><label class="sr-only" for="scope">Worktrees</label><select id="scope"><option value="all">All worktrees</option><option value="current">Current worktree</option></select></div>
+          <label class="checkbox-label" title="Include idle, stopped and unverified terminals"><input id="include-idle" type="checkbox"> Show all</label>
+        </div>
+      </div>
+    </div>
+    <div id="list-scroll" class="terminal-list" role="region" aria-label="Terminal list" tabindex="0">
+      <p id="notice" class="notice" role="status" hidden></p>
+      <p id="error" class="notice" role="alert" hidden></p>
+      <div id="groups" aria-label="Terminals by worktree"></div>
+      <div id="empty" class="empty" hidden><span data-icon="terminal"></span><h2 id="empty-title"></h2><p id="empty-detail"></p></div>
+    </div>
+    <footer aria-label="Plugin information"><span id="updated">Waiting for first scan</span><span class="plugin-version" aria-label="Plugin version 0.1.0" title="Terminal Lens version 0.1.0">v0.1.0</span></footer>
+  </main>
+  <script type="module" src="./panel.js"></script>
+</body>
+</html>

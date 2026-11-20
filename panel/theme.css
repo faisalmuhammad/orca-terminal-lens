@@ -1,0 +1,12 @@
+/* Native theme bindings, explicitly requested for this plugin by the user.
+   Fixed approved colors in styles.css remain the standalone preview fallback. */
+:root {
+  --color-foreground: var(--orca-foreground, #5255a3);
+  --color-primary: var(--orca-ring, #287d6c);
+  --color-secondary: var(--orca-muted-foreground, #6f6b80);
+  --color-surface: var(--orca-background, #ffffff);
+  color-scheme: light dark;
+}
+html.dark { color-scheme: dark; }
+html.light { color-scheme: light; }
+body { font-family: var(--orca-font-sans, system-ui, sans-serif); }

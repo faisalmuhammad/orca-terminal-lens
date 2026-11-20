@@ -1,0 +1,33 @@
+{
+  "name": "terminal-lens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Find running terminal processes and jump directly to their panes in Orca.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/faisalmuhammad/orca-terminal-lens.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test src/*.test.mjs scripts/*.test.mjs",
+    "check": "npm test && npm run release:check",
+    "release:prepare": "node scripts/prepare-release.mjs",
+    "release:check": "node scripts/ci-release.mjs && node scripts/check-release.mjs",
+    "release:export": "npm run release:check && node scripts/stage-publish.mjs",
+    "check:release": "node scripts/check-release.mjs",
+    "pack:release": "node scripts/pack-release.mjs",
+    "stage:publish": "node scripts/stage-publish.mjs",
+    "version:release": "node scripts/version-release.mjs",
+    "assets:generate": "node scripts/generate-art.mjs",
+    "assets:capture": "node scripts/capture-assets.mjs",
+    "preview:release": "node scripts/preview-release.mjs",
+    "validate": "orca plugin validate . --json"
+  },
+  "devDependencies": {
+    "sharp": "0.35.5"
+  }
+}
