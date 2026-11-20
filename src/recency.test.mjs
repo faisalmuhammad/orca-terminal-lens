@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { access, mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createRecencyTracker, navigationFromParts, readNativeRecency } from './recency.mjs';
@@ -85,14 +87,81 @@ test('reads bounded navigation fields through read-only SQLite argument arrays; 
       return { stdout: JSON.stringify(result) };
     };
     const result = await readNativeRecency({ run, directory });
-    assert.deepEqual(result.visits, { alpha: 100 });
+    assert.deepEqual({ ...result.visits }, { alpha: 100 });
     assert.equal(result.tabs.alpha[0].createdAt, 20);
     assert.equal(calls.length, 3);
     assert.ok(calls[2].at(-1).includes('LIMIT 5000'));
     assert.ok(!calls[2].at(-1).includes('SELECT payload FROM'));
-    assert.deepEqual(navigationFromParts([{ part_key: '["lastVisitedAtByWorktreeId","local|a"]', payload: '-1' }]).visits, { a: 0 });
+    assert.deepEqual({ ...navigationFromParts([{ part_key: '["lastVisitedAtByWorktreeId","local|a"]', payload: '-1' }]).visits }, { a: 0 });
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
+
+test('malformed navigation records do not discard valid recency or alter dictionary prototypes', () => {
+  const part = (key, value) => ({ part_key: JSON.stringify(key), payload: JSON.stringify(value) });
+  const nav = navigationFromParts([
+    null, { part_key: '{', payload: '0' }, part(null, 0),
+    part(['tabsByWorktree'], [{ id: 'missing-key' }]),
+    part(['tabsByWorktree', 'alpha'], [null, {}, { id: 'a', createdAt: 20 }]),
+    part(['tabGroups', 'alpha'], [null, { id: 'g', recentTabIds: [1, 'a'], activeTabId: {} }]),
+    part(['lastVisitedAtByWorktreeId', 'local|alpha'], 100),
+    part(['tabsByWorktree', '__proto__'], [{ id: 'safe', createdAt: 10 }]),
+    part(['activeWorktreeId'], {}), part(['activeTabId'], 'a')
+  ]);
+  assert.deepEqual({ ...nav.visits }, { alpha: 100 });
+  assert.deepEqual(nav.tabs.alpha, [{ id: 'a', createdAt: 20 }]);
+  assert.deepEqual(nav.groups.alpha, [{ id: 'g', activeTabId: null, recentTabIds: ['a'] }]);
+  assert.equal(Object.getPrototypeOf(nav.tabs), null);
+  assert.equal(nav.tabs.__proto__[0].id, 'safe');
+  assert.equal(nav.groups.constructor, undefined);
+  assert.equal(nav.activeWorktreeId, null);
+  assert.equal(nav.activeTabId, 'a');
+});
+
+const execute = promisify(execFile);
+const sqliteAvailable = await access('/usr/bin/sqlite3').then(() => true, () => false);
+for (const format of ['document', 'parts']) {
+  test(`${format} database queries return only tab navigation fields`, { skip: !sqliteAvailable }, async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'terminal-lens-navigation-'));
+    try {
+      const profile = path.join(directory, 'profiles', 'test-profile');
+      await mkdir(profile, { recursive: true });
+      await writeFile(path.join(directory, 'orca-profile-index.json'), JSON.stringify({ activeProfileId: 'test-profile' }));
+      const data = {
+        lastVisitedAtByWorktreeId: { 'local|alpha': 100 },
+        tabsByWorktree: { alpha: [{ id: 'a', createdAt: 20, title: 'PRIVATE_TAB_CONTENT', input: 'PRIVATE_TAB_CONTENT' }] },
+        tabGroups: { alpha: [{ id: 'g', activeTabId: 'a', recentTabIds: ['a'], unrelated: 'PRIVATE_TAB_CONTENT' }] },
+        activeWorktreeId: 'alpha', activeTabId: 'a', activeWorkspaceExecutionHostId: 'local',
+        activeGroupIdByWorktree: { alpha: 'g' }, chatMessages: ['PRIVATE_TAB_CONTENT']
+      };
+      const quote = value => "'" + JSON.stringify(value).replaceAll("'", "''") + "'";
+      let sql;
+      if (format === 'document') {
+        sql = "CREATE TABLE profile_state_documents(domain TEXT, domain_version INTEGER, payload TEXT); INSERT INTO profile_state_documents VALUES('workspaceSession',1," + quote(data) + ');';
+      } else {
+        sql = "CREATE TABLE profile_state_document_parts_meta(domain TEXT, domain_version INTEGER); INSERT INTO profile_state_document_parts_meta VALUES('workspaceSession',1); CREATE TABLE profile_state_document_parts(domain TEXT, part_key TEXT, payload TEXT);";
+        for (const [field, value] of Object.entries(data)) {
+          const parts = value && !Array.isArray(value) && typeof value === 'object'
+            ? Object.entries(value).map(([key, item]) => [[field, key], item]) : [[[field], value]];
+          for (const [key, item] of parts) sql += "INSERT INTO profile_state_document_parts VALUES('workspaceSession'," + quote(key) + ',' + quote(item) + ');';
+        }
+      }
+      await execute('/usr/bin/sqlite3', [path.join(profile, 'profile-state.db'), sql]);
+      const returned = [];
+      const nav = await readNativeRecency({ directory, run: async (file, args, options) => {
+        assert.equal(args[0], '-readonly');
+        const result = await execute(file, args, options);
+        returned.push(result.stdout);
+        return result;
+      } });
+      assert.ok(returned.every(output => !output.includes('PRIVATE_TAB_CONTENT')));
+      assert.deepEqual(nav.tabs.alpha, [{ id: 'a', createdAt: 20 }]);
+      assert.deepEqual(nav.groups.alpha, [{ id: 'g', activeTabId: 'a', recentTabIds: ['a'] }]);
+      assert.equal(nav.visits.alpha, 100);
+      assert.equal(nav.activeGroups.alpha, 'g');
+      assert.equal(nav.activeWorktreeId, 'alpha');
+    } finally { await rm(directory, { recursive: true, force: true }); }
+  });
+}
 
 test('icons distinguish actual executable types and agent identities, with neutral unknown fallbacks', () => {
   assert.deepEqual(processAppearance('node'), { icon: 'terminal', tone: 'node', label: 'JavaScript runtime' });

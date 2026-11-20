@@ -17,20 +17,28 @@ export function parseProcesses(text) {
 }
 
 export function terminalProcesses(rootPid, processes) {
-  const root = processes.get(rootPid);
-  if (!root) return { state: 'unknown', processes: [], reason: 'Terminal process is no longer in the process snapshot.' };
+  return inspectTerminalProcesses(rootPid, processes, indexChildren(processes));
+}
+
+function indexChildren(processes) {
   const children = new Map();
   for (const process of processes.values()) {
     if (!children.has(process.ppid)) children.set(process.ppid, []);
     children.get(process.ppid).push(process);
   }
+  return children;
+}
+
+function inspectTerminalProcesses(rootPid, processes, children) {
+  const root = processes.get(rootPid);
+  if (!root) return { state: 'unknown', processes: [], reason: 'Terminal process is no longer in the process snapshot.' };
   const pending = [root], seen = new Set(), jobs = [];
   while (pending.length) {
     const process = pending.pop();
     if (seen.has(process.pid)) continue;
     seen.add(process.pid);
     if (/^[ZX]/.test(process.stat) || helpers.test(process.name)) continue;
-    pending.push(...(children.get(process.pid) ?? []));
+    for (const child of children.get(process.pid) ?? []) pending.push(child);
     if (shells.has(process.name)) continue;
     const foreground = root.tpgid > 0 && process.pgid === root.tpgid;
     jobs.push({ pid: process.pid, name: process.name, foreground, stopped: /^T/.test(process.stat) });
@@ -41,6 +49,8 @@ export function terminalProcesses(rootPid, processes) {
 
 export function buildSnapshot(terminalList, resources, processes, now = Date.now()) {
   const groups = new Map(), notes = [];
+  // The process table can be large; build its topology once for every pane in this scan.
+  const children = indexChildren(processes);
   const fresh = Number.isFinite(resources?.collectedAt) && Math.abs(now - resources.collectedAt) < 30000;
   if (!fresh) notes.push('Process ownership snapshot is unavailable or stale. Refresh to try again.');
   if (terminalList.truncated) notes.push('Orca returned a partial terminal list.');
@@ -60,7 +70,7 @@ export function buildSnapshot(terminalList, resources, processes, now = Date.now
     const local = terminal.executionHostId === 'local';
     const paneMatches = owner?.paneKey === terminal.tabId + ':' + terminal.leafId;
     const verified = local && fresh && paneMatches && !terminal.orphaned && terminal.connected === true;
-    const result = verified ? terminalProcesses(owner.pid, processes) : { state: 'unknown', processes: [],
+    const result = verified ? inspectTerminalProcesses(owner.pid, processes, children) : { state: 'unknown', processes: [],
       reason: !local ? 'Process inspection is available for local terminals only.' : 'Terminal process ownership could not be verified.' };
     if (!groups.has(terminal.worktreeId)) {
       groups.set(terminal.worktreeId, { id: terminal.worktreeId, name: owner?.workspace.worktreeName || terminal.worktreePath?.split(/[\/\\]/).pop() || 'Workspace',

@@ -61,7 +61,7 @@ test('stale, mismatched, duplicate, orphaned and remote ownership remains unknow
 });
 test('pins scans to the local host and preserves uncertainty when diagnostics fails', async () => {
   const calls = [];
-  const scanner = createScanner({ executable: '/orca', platform: 'darwin', run: async (file, args) => {
+  const scanner = createScanner({ executable: '/orca', platform: 'darwin', readRecency: async () => null, run: async (file, args) => {
     calls.push([file, args]);
     if (file === '/bin/ps') return { stdout: table };
     if (args[0] === 'diagnostics') throw new Error('unavailable');

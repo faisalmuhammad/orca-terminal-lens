@@ -1,6 +1,6 @@
 {
   "name": "terminal-lens",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "description": "Find running terminal processes and jump directly to their panes in Orca.",

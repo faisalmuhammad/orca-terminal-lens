@@ -8,6 +8,14 @@ const execute = promisify(execFile);
 const timestamp = value => Number.isFinite(value) && value > 0 ? value : 0;
 const fields = ['lastVisitedAtByWorktreeId', 'tabsByWorktree', 'tabGroups', 'activeWorktreeId', 'activeTabId', 'activeWorkspaceExecutionHostId', 'activeGroupIdByWorktree'];
 
+// Keep both database formats on the same allowlist before data leaves SQLite.
+function collectionProjection(field, expression) {
+  const item = field === 'tabsByWorktree'
+    ? "json_object('id', json_extract(value, '$.id'), 'createdAt', json_extract(value, '$.createdAt'))"
+    : "json_object('id', json_extract(value, '$.id'), 'activeTabId', json_extract(value, '$.activeTabId'), 'recentTabIds', json(json_extract(value, '$.recentTabIds')))";
+  return `(SELECT json_group_array(${item}) FROM json_each(${expression}))`;
+}
+
 export function dataDirectory(env = process.env, platform = process.platform) {
   const scratch = env.ORCA_CHAT_SCRATCH_DIR;
   if (scratch && /^[a-f0-9]{32}$/.test(path.basename(scratch))) return path.dirname(path.dirname(scratch));
@@ -29,14 +37,20 @@ export async function readNativeRecency({ run = execute, directory = dataDirecto
   if (meta.length) {
     if (meta[0].domain_version !== 1) throw new Error('Unsupported Orca navigation schema.');
     const rows = await query(`SELECT part_key, CASE json_extract(part_key, '$[0]')
-      WHEN 'tabsByWorktree' THEN (SELECT json_group_array(json_object('id', json_extract(value, '$.id'), 'createdAt', json_extract(value, '$.createdAt'))) FROM json_each(payload))
-      WHEN 'tabGroups' THEN (SELECT json_group_array(json_object('id', json_extract(value, '$.id'), 'activeTabId', json_extract(value, '$.activeTabId'), 'recentTabIds', json(json_extract(value, '$.recentTabIds')))) FROM json_each(payload))
+      WHEN 'tabsByWorktree' THEN ${collectionProjection('tabsByWorktree', 'payload')}
+      WHEN 'tabGroups' THEN ${collectionProjection('tabGroups', 'payload')}
       ELSE payload END AS payload FROM profile_state_document_parts
       WHERE domain='workspaceSession' AND json_extract(part_key, '$[0]') IN (${fields.map(f => "'" + f + "'").join(',')}) LIMIT 5000;`);
     return navigationFromParts(rows);
   }
-  // Older profiles stored a single document: select just these navigation fields.
-  const rows = await query(`SELECT ${fields.map(f => `json_extract(payload, '$.${f}') AS ${f}`).join(',')} FROM profile_state_documents WHERE domain='workspaceSession' AND domain_version=1;`);
+  // Older profiles have whole tab records; project their navigation fields in SQL too.
+  const columns = fields.map(field => {
+    if (field === 'tabsByWorktree' || field === 'tabGroups') {
+      return `(SELECT json_group_object(worktree.key, json(${collectionProjection(field, 'worktree.value')})) FROM json_each(document.payload, '$.${field}') AS worktree) AS ${field}`;
+    }
+    return `json_extract(document.payload, '$.${field}') AS ${field}`;
+  });
+  const rows = await query(`SELECT ${columns.join(',')} FROM profile_state_documents AS document WHERE domain='workspaceSession' AND domain_version=1 LIMIT 1;`);
   if (!rows.length) throw new Error('Orca navigation metadata is unavailable.');
   const parts = [];
   for (const field of fields) {
@@ -50,16 +64,20 @@ export async function readNativeRecency({ run = execute, directory = dataDirecto
 }
 
 export function navigationFromParts(rows) {
-  const navigation = { visits: {}, tabs: {}, groups: {}, activeGroups: {}, activeWorktreeId: null, activeTabId: null, activeHost: null };
-  for (const row of rows.slice(0, 5000)) {
-    const [field, key] = JSON.parse(row.part_key), value = JSON.parse(row.payload);
+  const navigation = { visits: Object.create(null), tabs: Object.create(null), groups: Object.create(null), activeGroups: Object.create(null), activeWorktreeId: null, activeTabId: null, activeHost: null };
+  for (const row of (Array.isArray(rows) ? rows : []).slice(0, 5000)) {
+    let parts, value;
+    try { parts = JSON.parse(row?.part_key); value = JSON.parse(row?.payload); } catch { continue; }
+    if (!Array.isArray(parts) || !fields.includes(parts[0])) continue;
+    const [field, key] = parts;
+    if (['lastVisitedAtByWorktreeId', 'tabsByWorktree', 'tabGroups', 'activeGroupIdByWorktree'].includes(field) && (typeof key !== 'string' || !key)) continue;
     if (field === 'lastVisitedAtByWorktreeId' && key?.startsWith('local|')) navigation.visits[key.slice(6)] = timestamp(value);
-    else if (field === 'tabsByWorktree' && Array.isArray(value)) navigation.tabs[key] = value.slice(0, 1000).map(t => ({ id: t.id, createdAt: timestamp(t.createdAt) }));
-    else if (field === 'tabGroups' && Array.isArray(value)) navigation.groups[key] = value.slice(0, 100).map(g => ({ id: g.id, activeTabId: g.activeTabId, recentTabIds: Array.isArray(g.recentTabIds) ? g.recentTabIds.filter(id => typeof id === 'string').slice(-1000) : [] }));
+    else if (field === 'tabsByWorktree' && Array.isArray(value)) navigation.tabs[key] = value.slice(0, 1000).filter(t => t && typeof t.id === 'string').map(t => ({ id: t.id, createdAt: timestamp(t.createdAt) }));
+    else if (field === 'tabGroups' && Array.isArray(value)) navigation.groups[key] = value.slice(0, 100).filter(g => g && typeof g.id === 'string').map(g => ({ id: g.id, activeTabId: typeof g.activeTabId === 'string' ? g.activeTabId : null, recentTabIds: Array.isArray(g.recentTabIds) ? g.recentTabIds.filter(id => typeof id === 'string').slice(-1000) : [] }));
     else if (field === 'activeGroupIdByWorktree' && typeof value === 'string') navigation.activeGroups[key] = value;
-    else if (field === 'activeWorktreeId') navigation.activeWorktreeId = value;
-    else if (field === 'activeTabId') navigation.activeTabId = value;
-    else if (field === 'activeWorkspaceExecutionHostId') navigation.activeHost = value;
+    else if (field === 'activeWorktreeId' && typeof value === 'string') navigation.activeWorktreeId = value;
+    else if (field === 'activeTabId' && typeof value === 'string') navigation.activeTabId = value;
+    else if (field === 'activeWorkspaceExecutionHostId' && typeof value === 'string') navigation.activeHost = value;
   }
   return navigation;
 }

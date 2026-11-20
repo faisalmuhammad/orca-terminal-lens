@@ -1,6 +1,6 @@
 # Compatibility
 
-Terminal Lens 0.1.1 requires Orca desktop 1.4.260 or newer and its compatible CLI on a macOS or Linux host. The runtime ships as JavaScript and requires no separate dependency installation or build step. Windows process inspection is outside this release.
+Terminal Lens 0.1.2 requires Orca desktop 1.4.260 or newer and its compatible CLI on a macOS or Linux host. The runtime ships as JavaScript and requires no separate dependency installation or build step. Windows process inspection is outside this release.
 
 ## Terminal ownership
 
@@ -13,6 +13,8 @@ Detached processes that leave a terminal's descendant tree cannot be reliably at
 The plugin opens an exact Orca terminal pane. Closed or stale handles require another scan. Initial ordering uses saved worktree visits and tab order because Orca does not expose historical access times for every split pane. Observed pane selection and Open actions refine ordering during the session.
 
 On Linux, /usr/bin/sqlite3 is optional for reading saved navigation metadata. Without it, the plugin uses access observed during the current session. Native navigation metadata and resource ownership may change between Orca releases.
+
+Malformed navigation entries are ignored while valid saved recency remains available. If the database cannot be read or its schema is unsupported, process discovery continues using access observed during the session.
 
 ## Validation
 

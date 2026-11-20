@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Filter tab records to navigation fields inside SQLite in both supported profile formats.
+- Preserve valid recency records when other saved navigation entries are malformed.
+- Build the process parent/child index once per scan for faster discovery across many terminals.
+- Add tests for shared scans, recovery, preview exclusion, and terminal navigation validation.
+
 ## 0.1.1
 
 - Remove macOS Finder metadata from publication files.

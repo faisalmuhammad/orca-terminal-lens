@@ -1,6 +1,6 @@
 # Releasing Terminal Lens
 
-Release version: **0.1.1**, tag **v0.1.1**.
+Release version: **0.1.2**, tag **v0.1.2**.
 
 ## Repository content
 
@@ -49,9 +49,9 @@ git push origin main
 The versioned install reference is:
 
 ```text
-https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.1
+https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.2
 ```
 
-After publication, generate the Orca catalog entry from the published commit with **orca plugin release-entry . --json**. Catalog submission is separate from GitHub release automation. Published tags must remain unchanged. Check the listing at https://www.onorca.dev/plugins/faisalmuhammad/orca-terminal-lens.
+After publication, generate the Orca catalog entry from the published commit with **orca plugin release-entry . --json**. Catalog submission is separate from GitHub release automation. Published tags must remain unchanged. Check the listing at https://orca.dev/plugins/faisalmuhammad/orca-terminal-lens.
 
 See [local artwork and packaging](docs/RELEASING.md) for development-only preparation.

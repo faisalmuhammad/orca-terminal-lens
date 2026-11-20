@@ -2,13 +2,13 @@
 
 **Find the process. Jump to its terminal.**
 
-Find processes running in your terminals inside [Orca](https://onorca.dev). Search across projects and worktrees, see their current activity in a compact sidebar, and open the exact terminal pane from a result. Process discovery works across executables without a runtime allowlist.
+Find processes running in your terminals inside [Orca](https://orca.dev). Search across projects and worktrees, see their current activity in a compact sidebar, and open the exact terminal pane from a result. Process discovery works across executables without a runtime allowlist.
 
-[![Orca 1.4.260+](https://img.shields.io/badge/Orca-1.4.260%2B-5255a3)](https://onorca.dev) [![Light and Dark](https://img.shields.io/badge/appearance-light%20%26%20dark-5255a3)](#features) [![MIT license](https://img.shields.io/badge/license-MIT-287d6c)](LICENSE)
+[![Orca 1.4.260+](https://img.shields.io/badge/Orca-1.4.260%2B-5255a3)](https://orca.dev) [![Light and Dark](https://img.shields.io/badge/appearance-light%20%26%20dark-5255a3)](#features) [![MIT license](https://img.shields.io/badge/license-MIT-287d6c)](LICENSE)
 
 ![See All Active Terminals in One Place! Terminal Lens with a sample process list](assets/cover.png)
 
-Version **0.1.1**. The release process is documented in [RELEASE.md](RELEASE.md).
+Version **0.1.2**. The release process is documented in [RELEASE.md](RELEASE.md).
 
 ## Install
 
@@ -20,10 +20,10 @@ Install a versioned release:
 2. Choose **Add plugin → From a Git URL…** and enter:
 
    ```text
-   https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.1
+   https://github.com/faisalmuhammad/orca-terminal-lens#v0.1.2
    ```
 
-   Keep `#v0.1.1` at the end to install the release tag.
+   Keep `#v0.1.2` at the end to install the release tag.
 3. Review and approve the **trusted worker**, **workspace discovery and navigation**, and **terminal read** access.
 4. Open **Terminal Lens** from the terminal icon in the sidebar.
 
@@ -32,7 +32,7 @@ All runtime assets are included. Installation needs no separate Node.js installa
 CLI alternative:
 
 ```sh
-orca plugin install faisalmuhammad/orca-terminal-lens@v0.1.1 --json
+orca plugin install faisalmuhammad/orca-terminal-lens@v0.1.2 --json
 ```
 
 For local use before publication, add the plugin folder through **Settings → Plugins → Development folders…**. The cover renders the actual panel with fictional sample data; its uniform dark background and glow are image treatments. See [artwork provenance](assets/README.md).
